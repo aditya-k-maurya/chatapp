@@ -15,3 +15,6 @@ app.use(express.json({ limit: "16kb" }));
 
 // we can also get data from the url so to handle than we use middleware name urlencoded
 app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+
+
+export {app}
