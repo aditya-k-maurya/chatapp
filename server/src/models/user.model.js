@@ -9,17 +9,16 @@ const userSchema = new Schema(
 		email: {
 			type: String,
 			require: [true, "provide email"],
-      unique: true,
-
+			unique: true,
 		},
-		passowrd: {
-      type: String,
-      required: [true, "password required"]
+		password: {
+			type: String,
+			required: [true, "password required"],
 		},
-    profile_pic: {
-      type: String,
-      default: ""
-    }
+		profile_pic: {
+			type: String,
+			default: "",
+		},
 	},
 	{
 		timestamps: true,
