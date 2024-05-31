@@ -1,9 +1,9 @@
-import { response } from "express";
 import { Users } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import bcryptjs from "bcryptjs";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 
 const signUp = asyncHandler(async (req, res) => {
 	const { name, email, password, profile_pic } = req.body;
@@ -33,4 +33,43 @@ const signUp = asyncHandler(async (req, res) => {
 		.json(new ApiResponse(201, user, "User created successfully"));
 });
 
-export { signUp };
+const login = asyncHandler(async (req, res) => {
+	const { email, password } = req.body;
+
+	if (!email || !password) {
+		throw new ApiError(400, "Both email and password is required.");
+	}
+
+	const user = await Users.findOne({ email });
+	if (!user) {
+		throw new ApiError(400, "Email doesn't exists.");
+	}
+
+	const verifyPassword = await bcryptjs.compare(password, user.password);
+
+	if (!verifyPassword) {
+		throw new ApiError(400, "Invalid credientials");
+	}
+
+	const tokenData = {
+		id: user._id,
+		email: user.email,
+	};
+
+	const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
+		expiresIn: "7d",
+	});
+
+	const cookiesOption = {
+		httpOnly: true,
+		secure: true,
+	};
+
+
+	return res
+		.status(200)
+		.cookie("token", token, cookiesOption)
+		.json(200, token, "user logged in successfully");
+});
+
+export { signUp, login };
