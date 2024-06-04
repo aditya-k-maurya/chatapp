@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser"
 
 const app = express();
 
@@ -18,6 +19,9 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 
 // storing assets like images
 app.use('/images',express.static("public/images"));
+
+// to set data in browser securely
+app.use(cookieParser())
 
 //routes import
 import userRoutes from "./routes/user.routes.js"
