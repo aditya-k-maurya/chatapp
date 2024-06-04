@@ -56,15 +56,14 @@ const login = asyncHandler(async (req, res) => {
 		email: user.email,
 	};
 
-	const token = await jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
-		expiresIn: "7d",
+	const token = jwt.sign(tokenData, process.env.JWT_SECRET_KEY, {
+		expiresIn: "1d",
 	});
 
 	const cookiesOption = {
 		httpOnly: true,
 		secure: true,
 	};
-
 
 	return res
 		.status(200)
@@ -75,13 +74,56 @@ const login = asyncHandler(async (req, res) => {
 const logout = asyncHandler(async (req, res) => {
 	const token = req.cookies.token;
 	if (token) {
-		console.log(token)
+		console.log(token);
 	}
 
 	return res
-	.clearCookie("token")
-	.status(200)
-	.json(new ApiResponse(200,"" , "logout successfully"))
-})
+		.clearCookie("token")
+		.status(200)
+		.json(new ApiResponse(200, "", "logout successfully"));
+});
 
-export { signUp, login,logout };
+const updateUserName = asyncHandler(async (req, res) => {
+	const user = req.user;
+	const { name } = req.body;
+
+	console.log(user);
+	const updateUser = await Users.updateOne(
+		{ _id: user._id },
+		{
+			name,
+		}
+	);
+
+	const userInformation = await Users.findById(user._id);
+	res
+		.status(200)
+		.json(
+			new ApiResponse(200, userInformation, "User name updated successfully")
+		);
+});
+
+const updateUserProfile_pic = asyncHandler(async (req, res) => {
+	const { user } = req.user;
+	const { profile_pic } = req.body;
+
+	const updateUser = await Users.updateOne(
+		{ _id: user._id },
+		{
+			profile_pic,
+		}
+	);
+
+	const userInformation = await Users.findById(user._id);
+	res
+		.status(200)
+		.json(
+			new ApiResponse(
+				200,
+				userInformation,
+				"User profile pic updated successfully"
+			)
+		);
+});
+
+export { signUp, login, logout, updateUserName, updateUserProfile_pic };

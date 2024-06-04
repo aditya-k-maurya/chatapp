@@ -25,11 +25,16 @@ app.use(cookieParser())
 
 //routes import
 import userRoutes from "./routes/user.routes.js"
+import { ApiError } from "./utils/ApiError.js";
 
 //product routes declaration
 app.use("/api/v1/user", userRoutes);
 
 //user routes declaration
 // app.use("/", productRouter);
+
+
+export { ApiError };
+
 
 export { app };
